@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProductList.css';
 import { getAllProducts } from '../api';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const ProductList = () => {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -11,6 +11,8 @@ const ProductList = () => {
   const [allProducts, setAllProducts] = useState([]); // Store original fetched products
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get('category') || 'All';
 
   // Fetch products from backend on component mount
   useEffect(() => {
@@ -44,6 +46,10 @@ const ProductList = () => {
 
     fetchProducts();
   }, []); // Fetch only on mount
+
+  useEffect(() => {
+    setActiveCategory(initialCategory);
+  }, [initialCategory]);
 
   // Filter and sort products when filters change
   useEffect(() => {
