@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './LandingPage.css';
 import farmersImage from '../../assets/farmers-illustration.jpg';
 import organicVegetables from '../../assets/organic-vegetables.jpg';
@@ -23,6 +23,7 @@ const LandingPage = () => {
   const { loginWithPopup, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [activeGuide, setActiveGuide] = useState(null);
 
   const renderStars = (rating, total = 5) => {
     const stars = [];
@@ -57,6 +58,38 @@ const LandingPage = () => {
       }
     }
   };
+
+  const guideContent = {
+    farmer: {
+      title: t('farmer_guide_modal_title'),
+      intro: t('farmer_guide_modal_intro'),
+      steps: [
+        t('farmer_guide_step_1'),
+        t('farmer_guide_step_2'),
+        t('farmer_guide_step_3'),
+        t('farmer_guide_step_4'),
+      ],
+    },
+    user: {
+      title: t('user_guide_modal_title'),
+      intro: t('user_guide_modal_intro'),
+      steps: [
+        t('user_guide_step_1'),
+        t('user_guide_step_2'),
+        t('user_guide_step_3'),
+        t('user_guide_step_4'),
+        t('user_guide_step_5'),
+      ],
+    },
+  };
+
+  useEffect(() => {
+    document.body.classList.toggle('landing-guide-modal-open', Boolean(activeGuide));
+
+    return () => {
+      document.body.classList.remove('landing-guide-modal-open');
+    };
+  }, [activeGuide]);
 
 
 
@@ -120,7 +153,9 @@ const LandingPage = () => {
               </div>
               <h3 className="guide-title-d6">{t('farmer_guide')}</h3>
               <p className="guide-description-d6">{t('farmer_guide_desc')}</p>
-              <button className="read-more-btn-d6">{t('read_more')}</button>
+              <button className="read-more-btn-d6" onClick={() => setActiveGuide('farmer')}>
+                {t('read_more')}
+              </button>
             </div>
             <div className="guide-card-d6">
               <div className="guide-icon-d6">
@@ -128,29 +163,44 @@ const LandingPage = () => {
               </div>
               <h3 className="guide-title-d6">{t('user_guide')}</h3>
               <p className="guide-description-d6">{t('user_guide_desc')}</p>
-              <button className="read-more-btn-d6">{t('read_more')}</button>
+              <button className="read-more-btn-d6" onClick={() => setActiveGuide('user')}>
+                {t('read_more')}
+              </button>
             </div>
           </div>
         </div>
 
         {/* Shop Organic Products Section */}
         <div className="shop-section-d6">
-          <h2 className="section-title-d6">{t('shop_organic')}</h2>
-          <div className="products-container-d6">
-            <div className="product-item-d6">
-              <img src={organicCompost} alt="Organic Compost Plus" className="product-shop-image-d6" />
-              <h3 className="product-shop-title-d6">{t('organic_compost')}</h3>
-              <button className="explore-products-btn-d6">{t('explore_products')}</button>
+          <div className="shop-banner-d6">
+            <div className="shop-banner-copy-d6">
+              <span className="sponsored-pill-d6">Sponsored Ad</span>
+              <h2 className="shop-banner-title-d6">{t('shop_organic')}</h2>
+              <p className="shop-banner-description-d6">{t('ad_banner_description')}</p>
+              <div className="shop-banner-tags-d6">
+                <div className="shop-tag-d6">
+                  <img src={organicCompost} alt="Organic Compost" />
+                  <span>{t('organic_compost')}</span>
+                </div>
+                <div className="shop-tag-d6">
+                  <img src={naturalPestControl} alt="Natural Pest Control" />
+                  <span>{t('natural_pest_control')}</span>
+                </div>
+                <div className="shop-tag-d6">
+                  <img src={soilEnricher} alt="Soil Enricher" />
+                  <span>{t('soil_enricher')}</span>
+                </div>
+              </div>
+              <Link to="/products" className="shop-banner-cta-d6">
+                {t('explore_products')}
+              </Link>
             </div>
-            <div className="product-item-d6">
-              <img src={naturalPestControl} alt="Natural Pest Control" className="product-shop-image-d6" />
-              <h3 className="product-shop-title-d6">{t('natural_pest_control')}</h3>
-              <button className="explore-products-btn-d6">{t('explore_products')}</button>
-            </div>
-            <div className="product-item-d6">
-              <img src={soilEnricher} alt="Soil Enricher" className="product-shop-image-d6" />
-              <h3 className="product-shop-title-d6">{t('soil_enricher')}</h3>
-              <button className="explore-products-btn-d6">{t('explore_products')}</button>
+            <div className="shop-banner-visual-d6">
+              <img src={organicCompost} alt="Organic compost banner" className="shop-banner-image-d6" />
+              <div className="shop-banner-note-d6">
+                <span className="shop-banner-note-label-d6">{t('sponsored_ad')}</span>
+                <span>{t('ad_banner_note')}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -159,7 +209,7 @@ const LandingPage = () => {
         <div className="featured-products-d6">
           <h2 className="section-title-d6">{t('featured_products')}</h2>
           <div className="products-d6">
-            <Link to="/products">
+            <Link to="/products?category=Vegetables">
               <div className="product-card-d6">
                 <img src={organicVegetables} alt="Organic Vegetables" className="product-image-d6" />
                 <h3 className="product-title-d6">{t('organic_vegetables')}</h3>
@@ -167,18 +217,22 @@ const LandingPage = () => {
                 <button className="view-details-button-d6">{t('view_details')}</button>
               </div>
             </Link>
-            <div className="product-card-d6">
-              <img src={freshFruits} alt="Fresh Fruits" className="product-image-d6" />
-              <h3 className="product-title-d6">{t('organic_fruits')}</h3>
-              <p className="product-price-d6">₹199/kg</p>
-              <button className="view-details-button-d6">{t('view_details')}</button>
-            </div>
-            <div className="product-card-d6">
-              <img src={organicGrains} alt="Organic Grains" className="product-image-d6" />
-              <h3 className="product-title-d6">{t('organic_grains')}</h3>
-              <p className="product-price-d6">₹89/kg</p>
-              <button className="view-details-button-d6">{t('view_details')}</button>
-            </div>
+            <Link to="/products?category=Fruits">
+              <div className="product-card-d6">
+                <img src={freshFruits} alt="Fresh Fruits" className="product-image-d6" />
+                <h3 className="product-title-d6">{t('organic_fruits')}</h3>
+                <p className="product-price-d6">₹199/kg</p>
+                <button className="view-details-button-d6">{t('view_details')}</button>
+              </div>
+            </Link>
+            <Link to="/products?category=Grains">
+              <div className="product-card-d6">
+                <img src={organicGrains} alt="Organic Grains" className="product-image-d6" />
+                <h3 className="product-title-d6">{t('organic_grains')}</h3>
+                <p className="product-price-d6">₹89/kg</p>
+                <button className="view-details-button-d6">{t('view_details')}</button>
+              </div>
+            </Link>
           </div>
         </div>
 
@@ -293,6 +347,32 @@ const LandingPage = () => {
             <button className="community-button-d6 register-consumer">{t('register_consumer')}</button>
           </div>
         </div>
+
+        {activeGuide && (
+          <div className="guide-modal-overlay-d6" onClick={() => setActiveGuide(null)}>
+            <div className="guide-modal-d6" onClick={(event) => event.stopPropagation()}>
+              <button
+                className="guide-modal-close-d6"
+                type="button"
+                onClick={() => setActiveGuide(null)}
+                aria-label={t('guide_modal_close')}
+              >
+                ×
+              </button>
+              <span className="guide-modal-eyebrow-d6">{t('read_more')}</span>
+              <h3 className="guide-modal-title-d6">{guideContent[activeGuide].title}</h3>
+              <p className="guide-modal-intro-d6">{guideContent[activeGuide].intro}</p>
+              <ol className="guide-modal-steps-d6">
+                {guideContent[activeGuide].steps.map((step, index) => (
+                  <li key={step}>
+                    <span className="guide-step-index-d6">{index + 1}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
