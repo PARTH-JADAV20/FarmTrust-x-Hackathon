@@ -40,20 +40,14 @@ export const getUserByEmail = async (email) => {
     }
 };
 
-export const getFarmerByEmail = async (email, token) => {
+export const getFarmerByEmail = async (email) => {
     try {
-        const response = await fetch(`${API_URL}/farmers/${email}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`, // Include token if route is protected
-            },
-        });
-        if (!response.ok) throw new Error('Failed to fetch farmer');
-        const data = await response.json();
-        return data.farmer; // Return the farmer object
+        const encodedEmail = encodeURIComponent(email);
+        const response = await api.get(`/farmers/${encodedEmail}`);
+        return response.data.farmer;
     } catch (error) {
-        return;
+        console.error('Error fetching farmer:', error.response?.data || error.message);
+        throw error.response?.data?.message || 'Failed to fetch farmer';
     }
 };
 

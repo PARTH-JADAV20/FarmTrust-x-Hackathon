@@ -5,7 +5,6 @@ import { MdVerifiedUser } from 'react-icons/md';
 import { FiMessageCircle } from 'react-icons/fi';
 import { FaLocationDot } from 'react-icons/fa6';
 import { IoStar, IoLeaf } from 'react-icons/io5';
-import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getFarmerByEmail } from '../api';
 import { BsTelephoneX } from 'react-icons/bs';
@@ -17,7 +16,6 @@ const FarmerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCertificatePopup, setShowCertificatePopup] = useState(null);
-  const { getAccessTokenSilently } = useAuth0();
   const { email } = useParams();
   const navigate = useNavigate();
 
@@ -43,17 +41,16 @@ const FarmerProfile = () => {
   useEffect(() => {
     const fetchFarmer = async () => {
       try {
-        const token = await getAccessTokenSilently();
-        const farmerData = await getFarmerByEmail(email, token);
+        const farmerData = await getFarmerByEmail(email);
         setFarmer(farmerData);
       } catch (err) {
-        setError('Failed to load farmer profile.');
+        setError(typeof err === 'string' ? err : 'Failed to load farmer profile.');
       } finally {
         setLoading(false);
       }
     };
     if (email) fetchFarmer();
-  }, [email, getAccessTokenSilently]);
+  }, [email]);
 
   const handleMessageClick = () => {
     if (farmer && farmer.email) {
